@@ -688,33 +688,7 @@ IMPORTANT: Use the exact column names as shown above. For example:
         if code.endswith("```"):
             code = code[:-3]
         
-        # Add error handling wrapper
-        wrapped_code = f"""
-try:
-    import matplotlib.pyplot as plt
-    import pandas as pd
-    import numpy as np
-    
-    # Set style for better-looking plots
-    plt.style.use('default')
-    
-{code}
-
-except Exception as e:
-    # Create error visualization
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.text(0.5, 0.5, f'Error creating visualization:\\n{{str(e)}}', 
-            ha='center', va='center', fontsize=12, 
-            bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.7))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.axis('off')
-    plt.title('Visualization Error', fontsize=16, fontweight='bold')
-    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
-    plt.close()
-"""
-        
-        return wrapped_code.strip()
+        return code.strip()
         
     except Exception as e:
         st.error(f"Error generating visualization code: {str(e)}")
