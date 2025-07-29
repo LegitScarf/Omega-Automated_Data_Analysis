@@ -794,7 +794,7 @@ def main():
     
     # Sidebar for file upload and dataset info
     with st.sidebar:
-        st.markdown("### 📁 Upload Your Dataset")
+        st.markdown("### Upload Your Dataset")
         uploaded_file = st.file_uploader(
             "Choose a CSV or Excel file",
             type=['csv', 'xlsx', 'xls'],
@@ -812,7 +812,7 @@ def main():
                 st.success(f"✅ Dataset loaded successfully!")
                 
                 # Dataset overview
-                st.markdown("### 📊 Dataset Overview")
+                st.markdown("### Dataset Overview")
                 col1, col2 = st.columns(2)
                 
                 with col1:
@@ -832,7 +832,7 @@ def main():
                     """, unsafe_allow_html=True)
                 
                 # Column information
-                st.markdown("### 📋 Available Columns")
+                st.markdown("### Available Columns")
                 for col in data.columns:
                     st.markdown(f"• **{col}** ({data[col].dtype})")
                 
