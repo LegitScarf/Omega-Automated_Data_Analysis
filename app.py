@@ -10,17 +10,21 @@ from PIL import Image
 import io
 import tempfile
 
-# Configure Streamlit page with white theme
+# Configure Streamlit page with modern theme
 st.set_page_config(
     page_title="Omega - AI Data Analyst",
-    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Force white theme and modern styling
+# Modern styling with black header
 st.markdown("""
 <style>
+    /* Import modern fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    
     /* Force light theme */
     .stApp {
         background-color: #ffffff !important;
@@ -39,184 +43,213 @@ st.markdown("""
         border-right: 1px solid #e2e8f0 !important;
     }
     
-    /* Modern typography */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
+    /* Base typography */
     html, body, [class*="css"] {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         background-color: #ffffff !important;
         color: #1a1a1a !important;
     }
     
-    /* Header styling */
+    /* Modern black header styling */
     .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        padding: 3rem 2rem !important;
-        border-radius: 16px !important;
+        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #000000 100%) !important;
+        padding: 4rem 2rem !important;
+        border-radius: 20px !important;
         margin-bottom: 2rem !important;
         text-align: center !important;
         color: white !important;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    /* Subtle animated background pattern */
+    .main-header::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%) !important;
+        pointer-events: none !important;
     }
     
     .main-header h1 {
-        font-size: 3.5rem !important;
-        font-weight: 700 !important;
+        font-size: 4.5rem !important;
+        font-weight: 900 !important;
         margin-bottom: 0.5rem !important;
-        font-family: 'Inter', sans-serif !important;
+        font-family: 'Poppins', sans-serif !important;
         color: white !important;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.1) !important;
+        letter-spacing: -0.02em !important;
+        position: relative !important;
+        z-index: 1 !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
     }
     
     .main-header p {
-        font-size: 1.25rem !important;
+        font-size: 1.4rem !important;
         font-weight: 400 !important;
-        opacity: 0.95 !important;
+        opacity: 0.9 !important;
         font-family: 'Inter', sans-serif !important;
-        color: white !important;
+        color: #e2e8f0 !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
     
     /* Chat interface styling */
     .chat-container {
         background-color: #ffffff !important;
-        border-radius: 12px !important;
-        padding: 1.5rem !important;
+        border-radius: 16px !important;
+        padding: 2rem !important;
         margin-bottom: 1rem !important;
         border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
     }
     
     .user-message {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        background: linear-gradient(135deg, #1a1a1a, #000000) !important;
         color: white !important;
-        padding: 1rem 1.5rem !important;
-        border-radius: 18px 18px 4px 18px !important;
+        padding: 1.2rem 1.8rem !important;
+        border-radius: 20px 20px 4px 20px !important;
         margin: 1rem 0 !important;
         margin-left: 20% !important;
         font-weight: 500 !important;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     .assistant-message {
-        background-color: #f1f5f9 !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
         color: #1e293b !important;
-        padding: 1rem 1.5rem !important;
-        border-radius: 18px 18px 18px 4px !important;
+        padding: 1.2rem 1.8rem !important;
+        border-radius: 20px 20px 20px 4px !important;
         margin: 1rem 0 !important;
         margin-right: 20% !important;
-        border-left: 4px solid #10b981 !important;
+        border-left: 4px solid #000000 !important;
         font-weight: 400 !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+        border: 1px solid #e2e8f0 !important;
     }
     
     .error-message {
-        background-color: #fef2f2 !important;
+        background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%) !important;
         color: #dc2626 !important;
-        padding: 1rem 1.5rem !important;
-        border-radius: 12px !important;
+        padding: 1.2rem 1.8rem !important;
+        border-radius: 16px !important;
         margin: 1rem 0 !important;
         border-left: 4px solid #ef4444 !important;
         font-weight: 500 !important;
+        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1) !important;
     }
     
     /* Input styling */
     .stTextInput > div > div > input, .stChatInput > div > div > input {
         background-color: #ffffff !important;
         border: 2px solid #e2e8f0 !important;
-        border-radius: 12px !important;
+        border-radius: 16px !important;
         color: #1a1a1a !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 1rem !important;
-        padding: 0.75rem 1rem !important;
-        transition: all 0.2s ease !important;
+        padding: 1rem 1.5rem !important;
+        transition: all 0.3s ease !important;
     }
     
     .stTextInput > div > div > input:focus, .stChatInput > div > div > input:focus {
-        border-color: #667eea !important;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        border-color: #1a1a1a !important;
+        box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.1) !important;
         outline: none !important;
     }
     
     /* Button styling */
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%) !important;
         color: white !important;
         border: none !important;
-        border-radius: 12px !important;
-        padding: 0.75rem 2rem !important;
+        border-radius: 16px !important;
+        padding: 1rem 2.5rem !important;
         font-weight: 600 !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 1rem !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
     }
     
     /* Metrics cards */
     .metric-card {
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
-        padding: 1.5rem !important;
-        border-radius: 12px !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
         border: 1px solid #e2e8f0 !important;
         text-align: center !important;
         color: #1e293b !important;
         font-family: 'Inter', sans-serif !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-        transition: all 0.2s ease !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.3s ease !important;
     }
     
     .metric-card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        transform: translateY(-4px) !important;
     }
     
     .metric-card h4 {
         color: #64748b !important;
         font-size: 0.875rem !important;
-        font-weight: 500 !important;
-        margin-bottom: 0.5rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.75rem !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
+        letter-spacing: 0.1em !important;
     }
     
     .metric-card h2 {
-        color: #1e293b !important;
-        font-size: 2rem !important;
-        font-weight: 700 !important;
+        color: #1a1a1a !important;
+        font-size: 2.5rem !important;
+        font-weight: 800 !important;
         margin: 0 !important;
+        font-family: 'Poppins', sans-serif !important;
     }
     
     /* File uploader */
     .uploadedFile {
-        background-color: #f8fafc !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
         border: 2px dashed #94a3b8 !important;
-        border-radius: 12px !important;
-        padding: 2rem !important;
+        border-radius: 16px !important;
+        padding: 3rem !important;
         text-align: center !important;
         color: #475569 !important;
         font-family: 'Inter', sans-serif !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s ease !important;
     }
     
     .uploadedFile:hover {
-        border-color: #667eea !important;
-        background-color: #f1f5f9 !important;
+        border-color: #1a1a1a !important;
+        background: linear-gradient(135deg, #f1f5f9 0%, #ffffff 100%) !important;
     }
     
     /* Override Streamlit's default text colors */
     .stMarkdown, .stMarkdown p, .stText, div[data-testid="stMarkdownContainer"] p {
         color: #1e293b !important;
         font-family: 'Inter', sans-serif !important;
-        line-height: 1.6 !important;
+        line-height: 1.7 !important;
     }
     
     /* Headers */
     h1, h2, h3, h4, h5, h6 {
-        color: #1e293b !important;
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 600 !important;
+        color: #1a1a1a !important;
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 700 !important;
     }
     
     /* Success and info messages */
@@ -224,59 +257,64 @@ st.markdown("""
         background-color: #f0fdf4 !important;
         border: 1px solid #22c55e !important;
         color: #15803d !important;
+        border-radius: 12px !important;
     }
     
     .stInfo {
         background-color: #f0f9ff !important;
         border: 1px solid #3b82f6 !important;
         color: #1d4ed8 !important;
+        border-radius: 12px !important;
     }
     
     .stError {
         background-color: #fef2f2 !important;
         border: 1px solid #ef4444 !important;
         color: #dc2626 !important;
+        border-radius: 12px !important;
     }
     
     /* Welcome section styling */
     .welcome-section {
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
-        padding: 3rem 2rem !important;
-        border-radius: 16px !important;
+        padding: 4rem 3rem !important;
+        border-radius: 20px !important;
         text-align: center !important;
         color: #1e293b !important;
         border: 1px solid #e2e8f0 !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
     }
     
     .welcome-section h2 {
-        color: #1e293b !important;
-        font-size: 2.5rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 1rem !important;
+        color: #1a1a1a !important;
+        font-size: 3rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 1.5rem !important;
+        font-family: 'Poppins', sans-serif !important;
     }
     
     .welcome-section p {
         color: #64748b !important;
-        font-size: 1.125rem !important;
+        font-size: 1.25rem !important;
         font-weight: 400 !important;
     }
     
     .feature-box {
         background-color: #ffffff !important;
-        padding: 2rem !important;
-        border-radius: 12px !important;
+        padding: 3rem !important;
+        border-radius: 16px !important;
         border: 1px solid #e2e8f0 !important;
-        margin: 2rem auto !important;
-        max-width: 600px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        margin: 3rem auto !important;
+        max-width: 700px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
     }
     
     .feature-box h3 {
-        color: #1e293b !important;
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-        margin-bottom: 1rem !important;
+        color: #1a1a1a !important;
+        font-size: 1.75rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 1.5rem !important;
+        font-family: 'Poppins', sans-serif !important;
     }
     
     .feature-list {
@@ -286,8 +324,9 @@ st.markdown("""
     
     .feature-list p {
         color: #475569 !important;
-        margin: 0.75rem 0 !important;
+        margin: 1rem 0 !important;
         font-weight: 500 !important;
+        font-size: 1.1rem !important;
     }
     
     /* Loading spinner */
@@ -300,7 +339,7 @@ st.markdown("""
     
     .spinner {
         border: 4px solid #f3f4f6 !important;
-        border-top: 4px solid #667eea !important;
+        border-top: 4px solid #1a1a1a !important;
         border-radius: 50% !important;
         width: 40px !important;
         height: 40px !important;
@@ -328,21 +367,25 @@ st.markdown("""
     .stDataFrame {
         background-color: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
-        border-radius: 8px !important;
+        border-radius: 12px !important;
     }
+    
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize OpenAI client with better error handling
+# Initialize OpenAI client with improved error handling
 def init_openai():
     try:
-        # Try multiple ways to get the API key
         api_key = None
         
         # Method 1: Streamlit secrets
         try:
-            api_key = st.secrets["OPENAI_API_KEY"]
-        except:
+            api_key = st.secrets.get("OPENAI_API_KEY")
+        except Exception:
             pass
         
         # Method 2: Environment variable
@@ -357,33 +400,61 @@ def init_openai():
 # Method 1: Streamlit secrets (.streamlit/secrets.toml)
 OPENAI_API_KEY = "your-api-key-here"
 
-# Method 2: Environment variable
+# Method 2: Environment variable  
 export OPENAI_API_KEY="your-api-key-here"
             """)
             
             # Allow user to input API key directly
-            api_key = st.text_input("🔑 Enter your OpenAI API Key:", type="password")
+            api_key = st.text_input("🔑 Enter your OpenAI API Key:", type="password", key="api_key_input")
             
             if not api_key:
+                st.warning("Please enter your OpenAI API key to continue.")
                 st.stop()
         
-        # Test the API key
-        client = OpenAI(api_key=api_key)
-        
-        # Test connection with a simple call
+        # Initialize client with better timeout and error handling
         try:
-            client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": "test"}],
-                max_tokens=1
+            client = OpenAI(
+                api_key=api_key,
+                timeout=30.0,  # 30 second timeout
+                max_retries=3   # Retry up to 3 times
             )
-            st.success("✅ OpenAI API connection successful!")
+            
+            # Test connection with a minimal call
+            test_response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": "Hello"}],
+                max_tokens=5,
+                timeout=10.0
+            )
+            
+            if test_response:
+                st.success("✅ OpenAI API connection successful!")
+                return client
+            else:
+                raise Exception("No response received from OpenAI API")
+                
         except Exception as e:
-            st.error(f"❌ API key validation failed: {str(e)}")
+            error_msg = str(e).lower()
+            if "api key" in error_msg or "authentication" in error_msg:
+                st.error("❌ Invalid API key. Please check your OpenAI API key.")
+            elif "timeout" in error_msg or "connection" in error_msg:
+                st.error("❌ Connection timeout. Please check your internet connection and try again.")
+            elif "rate limit" in error_msg:
+                st.error("❌ Rate limit exceeded. Please wait a moment and try again.")
+            elif "insufficient_quota" in error_msg:
+                st.error("❌ Insufficient quota. Please check your OpenAI account billing.")
+            else:
+                st.error(f"❌ API connection failed: {str(e)}")
+            
+            st.info("💡 Troubleshooting tips:")
+            st.markdown("""
+            - Ensure your API key is valid and active
+            - Check your internet connection
+            - Verify your OpenAI account has sufficient credits
+            - Try refreshing the page
+            """)
             st.stop()
             
-        return client
-        
     except Exception as e:
         st.error(f"❌ Error initializing OpenAI client: {str(e)}")
         st.stop()
@@ -414,7 +485,8 @@ Constraints:
                 {"role": "user", "content": f"Dataset:\n{dataset_info}\n\nUser Prompt:\n{query}"}
             ],
             max_tokens=10,
-            temperature=0
+            temperature=0,
+            timeout=15.0
         )
         return response.choices[0].message.content.strip().lower()
     except Exception as e:
@@ -432,10 +504,11 @@ Constraints:
 - End with: plt.savefig('plot.png', dpi=300, bbox_inches='tight'); plt.close()
 - Use matplotlib and pandas only
 - The data is available as pandas DataFrame named 'data'
-- Always create a figure with: fig, ax = plt.subplots(figsize=(10, 6))
+- Always create a figure with: fig, ax = plt.subplots(figsize=(12, 8))
 - Return ONLY executable Python code, no markdown formatting
 - Handle missing values and data types appropriately
 - Use clear titles, labels, and legends
+- Apply modern styling with good color schemes
 
 Format: Return only raw Python code with proper error handling.
 """
@@ -448,8 +521,9 @@ Format: Return only raw Python code with proper error handling.
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Dataset:\n{dataset_info}\n\nUser Prompt:\n{query}"}
             ],
-            max_tokens=800,
-            temperature=0.3
+            max_tokens=1000,
+            temperature=0.3,
+            timeout=20.0
         )
         
         code = response.choices[0].message.content.strip()
@@ -490,7 +564,8 @@ def insights_agent(image_bytes, query, client):
                     ]
                 }
             ],
-            max_tokens=800
+            max_tokens=1000,
+            timeout=25.0
         )
         
         return response.choices[0].message.content
@@ -553,10 +628,10 @@ def process_query(data, query, client):
         return f"❌ Error processing query: {str(e)}", None
 
 def main():
-    # Header
+    # Modern black header
     st.markdown("""
     <div class="main-header">
-        <h1>🤖 Omega</h1>
+        <h1>Omega</h1>
         <p>Multi-Agentic System for Intelligent Data Analysis</p>
     </div>
     """, unsafe_allow_html=True)
