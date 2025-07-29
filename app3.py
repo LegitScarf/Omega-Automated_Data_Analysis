@@ -390,7 +390,7 @@ def init_openai():
         # Method 2: Environment variable
         if not api_key:
             api_key = os.getenv("OPENAI_API_KEY")
-            if api_key:
+            #if api_key:
                 #st.info("🔍 Using API key from environment variable")
         
         # Method 3: Direct input from user
