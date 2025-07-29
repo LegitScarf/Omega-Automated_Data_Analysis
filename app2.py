@@ -935,7 +935,7 @@ def main():
         # Welcome screen
         st.markdown("""
         <div class="welcome-section">
-            <h2>Welcome to Omega! 🚀</h2>
+            <h2>Welcome to Omega! </h2>
             <p>Your intelligent companion for data analysis and visualization</p>
             <div class="feature-box">
                 <h3>How it works:</h3>
