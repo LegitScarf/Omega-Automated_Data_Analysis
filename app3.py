@@ -391,7 +391,7 @@ def init_openai():
         if not api_key:
             api_key = os.getenv("OPENAI_API_KEY")
             if api_key:
-                st.info("🔍 Using API key from environment variable")
+                #st.info("🔍 Using API key from environment variable")
         
         # Method 3: Direct input from user
         if not api_key:
@@ -418,14 +418,14 @@ export OPENAI_API_KEY="your-api-key-here"
             st.stop()
         
         # Connection diagnostics
-        st.info("🔄 Testing connection to OpenAI API...")
+        #st.info("🔄 Testing connection to OpenAI API...")
         
         # Test basic connectivity first
         import requests
         try:
             # Test basic internet connectivity
             response = requests.get("https://httpbin.org/status/200", timeout=5)
-            st.success("✅ Internet connection working")
+            #st.success("✅ Internet connection working")
         except Exception as e:
             st.error(f"❌ Internet connectivity issue: {str(e)}")
             st.info("Please check your internet connection or VPN settings")
@@ -440,7 +440,7 @@ export OPENAI_API_KEY="your-api-key-here"
             )
             
             # Test with a very simple call using faster model
-            st.info("🧪 Testing OpenAI client with minimal request...")
+            #st.info("🧪 Testing OpenAI client with minimal request...")
             
             test_response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -451,7 +451,7 @@ export OPENAI_API_KEY="your-api-key-here"
             )
             
             if test_response and test_response.choices:
-                st.success("✅ OpenAI API connection successful!")
+                #st.success("✅ OpenAI API connection successful!")
                 return client
             else:
                 raise Exception("Empty response from OpenAI API")
