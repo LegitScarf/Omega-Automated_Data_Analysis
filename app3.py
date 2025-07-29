@@ -382,8 +382,8 @@ def init_openai():
         # Method 1: Streamlit secrets
         try:
             api_key = st.secrets.get("OPENAI_API_KEY")
-            if api_key:
-                st.info("🔍 Using API key from Streamlit secrets")
+            # if api_key:
+            #     st.info("🔍 Using API key from Streamlit secrets")
         except Exception:
             pass
         
