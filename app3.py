@@ -424,7 +424,7 @@ export OPENAI_API_KEY="your-api-key-here"
         import requests
         try:
             # Test basic internet connectivity
-            response = requests.get("https://httpbin.org/status/200", timeout=5)
+            response = requests.get("https://httpbin.org/status/200", timeout=15)
             #st.success("✅ Internet connection working")
         except Exception as e:
             st.error(f"❌ Internet connectivity issue: {str(e)}")
