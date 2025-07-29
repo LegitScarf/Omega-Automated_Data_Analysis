@@ -543,83 +543,179 @@ API Key Length: {len(api_key)} characters
         st.stop()
 
 def query_agent(data, query, client):
-    """Query Checker Agent - verifies if requested columns exist in dataset"""
+    """Query Checker Agent - intelligently verifies if user request can be fulfilled with available data"""
     try:
         system_prompt = """
-Role: You are a Query Checker Agent. Your sole job is to verify if the user's request involves columns that are present in the dataset provided.
+Role: You are an intelligent Query Checker Agent. Your job is to determine if a user's data analysis request can be fulfilled using the available dataset columns.
 
-Behavior:
-- Read the user query and identify column names that may be mentioned
-- Match those with the dataset's column headers
-- If ALL required columns exist in the dataset, return: yes
-- If ANY column is missing, return: no
+Instructions:
+- Analyze the user's query to understand what they want to visualize or analyze
+- Look at the available dataset columns and sample data
+- Consider partial matches, synonyms, and related concepts
+- The user might refer to columns using different names (e.g., "price" for "Price", "sales" for "Sales_Amount")
+- Focus on whether the CONCEPT can be analyzed, not exact word matching
+- Be PERMISSIVE - if there's any reasonable way to fulfill the request, return "yes"
+- Only return "no" if the request is completely impossible with the available data
 
-Constraints:
-- Your response must be exactly one word: yes or no
-- No extra text, no explanation
+Examples:
+- Query: "compare sales and profit" → If dataset has "Sales" and "Profit" columns → "yes"
+- Query: "show revenue trends" → If dataset has any revenue/sales/income column → "yes"  
+- Query: "analyze customer age distribution" → If dataset has age-related column → "yes"
+- Query: "plot temperature vs humidity" → If dataset has no weather data → "no"
+
+Response: Return ONLY "yes" or "no" - nothing else.
 """
         
-        dataset_info = f"Dataset columns: {list(data.columns)}\nSample data:\n{data.head().to_string()}"
+        # Enhanced dataset info with column descriptions
+        column_info = []
+        for col in data.columns:
+            sample_values = data[col].dropna().head(3).tolist()
+            column_info.append(f"'{col}' (type: {data[col].dtype}, samples: {sample_values})")
+        
+        dataset_info = f"""
+Dataset Columns: {list(data.columns)}
+Column Details:
+{chr(10).join(column_info)}
+
+Dataset Shape: {data.shape[0]} rows, {data.shape[1]} columns
+Sample Data:
+{data.head(3).to_string()}
+"""
         
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Dataset:\n{dataset_info}\n\nUser Prompt:\n{query}"}
+                {"role": "user", "content": f"Dataset Information:\n{dataset_info}\n\nUser Query: {query}\n\nCan this query be fulfilled with the available data?"}
             ],
-            max_tokens=10,
+            max_tokens=5,
             temperature=0,
             timeout=15.0
         )
-        return response.choices[0].message.content.strip().lower()
+        
+        result = response.choices[0].message.content.strip().lower()
+        
+        # Debug information (remove in production)
+        if result == "no":
+            st.warning(f"🔍 Query validation failed for: '{query}'")
+            with st.expander("Debug: Why was this rejected?"):
+                st.write("Available columns:", list(data.columns))
+                st.write("Query:", query)
+                st.write("Validation result:", result)
+        
+        return result
+        
     except Exception as e:
         st.error(f"Error in query validation: {str(e)}")
-        return "no"
+        # If validation fails, assume query is valid to avoid blocking legitimate requests
+        return "yes"
 
 def coder_agent(data, query, client):
-    """Coder Agent - generates matplotlib visualization code"""
+    """Coder Agent - generates matplotlib visualization code with intelligent column matching"""
     try:
         system_prompt = """
-Role: You are an advanced visualization agent that writes Python code using matplotlib to generate insightful visualizations.
+Role: You are an advanced visualization agent that creates Python code using matplotlib for data visualization.
 
-Constraints:
-- Do not include plt.show() in the code
-- End with: plt.savefig('plot.png', dpi=300, bbox_inches='tight'); plt.close()
+IMPORTANT INSTRUCTIONS:
+1. The dataset columns are provided with their exact names - use them EXACTLY as shown
+2. Be flexible with user language - they might say "sales" when column is "Sales" or "Sales_Amount"
+3. Look at sample data to understand what each column contains
+4. Choose appropriate visualization types based on data types and user request
+5. Handle missing values gracefully
+6. Create professional, well-labeled visualizations
+
+Technical Requirements:
 - Use matplotlib and pandas only
-- The data is available as pandas DataFrame named 'data'
-- Always create a figure with: fig, ax = plt.subplots(figsize=(12, 8))
-- Return ONLY executable Python code, no markdown formatting
-- Handle missing values and data types appropriately
-- Use clear titles, labels, and legends
-- Apply modern styling with good color schemes
+- Data is available as DataFrame named 'data'
+- Start with: fig, ax = plt.subplots(figsize=(12, 8))
+- End with: plt.savefig('plot.png', dpi=300, bbox_inches='tight'); plt.close()
+- NO plt.show()
+- Apply modern styling and good color schemes
+- Include proper titles, axis labels, and legends
+- Handle data type conversions if needed
 
-Format: Return only raw Python code with proper error handling.
+Return ONLY executable Python code with no markdown formatting.
 """
 
-        dataset_info = f"Dataset columns: {list(data.columns)}\nDataset shape: {data.shape}\nSample data:\n{data.head().to_string()}"
+        # Provide comprehensive dataset information
+        column_details = []
+        for col in data.columns:
+            dtype = str(data[col].dtype)
+            non_null = data[col].count()
+            unique_vals = data[col].nunique()
+            sample_vals = data[col].dropna().head(5).tolist()
+            
+            column_details.append(f"""
+Column: '{col}'
+- Type: {dtype}
+- Non-null values: {non_null}/{len(data)}
+- Unique values: {unique_vals}
+- Sample values: {sample_vals}""")
+
+        dataset_info = f"""
+EXACT COLUMN NAMES: {list(data.columns)}
+Dataset Shape: {data.shape[0]} rows × {data.shape[1]} columns
+
+COLUMN DETAILS:
+{''.join(column_details)}
+
+SAMPLE DATA:
+{data.head().to_string()}
+
+IMPORTANT: Use the exact column names as shown above. For example:
+- If user says "sales" but column is "Sales", use data['Sales']
+- If user says "revenue" but column is "Total_Revenue", use data['Total_Revenue']
+"""
         
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Dataset:\n{dataset_info}\n\nUser Prompt:\n{query}"}
+                {"role": "user", "content": f"{dataset_info}\n\nUser Request: {query}\n\nGenerate visualization code:"}
             ],
-            max_tokens=1000,
-            temperature=0.3,
-            timeout=20.0
+            max_tokens=1200,
+            temperature=0.2,
+            timeout=25.0
         )
         
         code = response.choices[0].message.content.strip()
         
-        # Clean code
+        # Clean code formatting
         if code.startswith("```python"):
             code = code[9:]
-        if code.startswith("```"):
+        elif code.startswith("```"):
             code = code[3:]
         if code.endswith("```"):
             code = code[:-3]
         
-        return code.strip()
+        # Add error handling wrapper
+        wrapped_code = f"""
+try:
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    import numpy as np
+    
+    # Set style for better-looking plots
+    plt.style.use('default')
+    
+{code}
+
+except Exception as e:
+    # Create error visualization
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.text(0.5, 0.5, f'Error creating visualization:\\n{{str(e)}}', 
+            ha='center', va='center', fontsize=12, 
+            bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.7))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis('off')
+    plt.title('Visualization Error', fontsize=16, fontweight='bold')
+    plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+    plt.close()
+"""
+        
+        return wrapped_code.strip()
+        
     except Exception as e:
         st.error(f"Error generating visualization code: {str(e)}")
         return None
