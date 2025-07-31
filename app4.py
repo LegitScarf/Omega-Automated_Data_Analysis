@@ -454,7 +454,7 @@ export OPENAI_API_KEY="your-api-key-here"
             #st.info("🧪 Testing OpenAI client with minimal request...")
             
             test_response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=[{"role": "user", "content": "Hi"}],
                 max_tokens=1,
                 temperature=0,
@@ -563,7 +563,7 @@ Sample Data:
 """
         
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Dataset Information:\n{dataset_info}\n\nUser Query: {query}\n\nCan this query be fulfilled with the available data?"}
@@ -648,7 +648,7 @@ IMPORTANT: Use the exact column names as shown above. For example:
 """
         
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"{dataset_info}\n\nUser Request: {query}\n\nGenerate visualization code:"}
@@ -682,7 +682,7 @@ def insights_agent_stream(image_bytes, query, client):
         
         # Create streaming completion
         stream = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "user",
