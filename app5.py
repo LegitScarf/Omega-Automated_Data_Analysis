@@ -17,22 +17,222 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Force sidebar to be visible
+# Add emergency sidebar restore button and enhanced sidebar controls
 st.markdown("""
-<script>
-    // Force sidebar to be visible
-    const sidebar = parent.document.querySelector('[data-testid="stSidebar"]');
-    if (sidebar) {
-        sidebar.style.transform = 'translateX(0px)';
-        sidebar.style.minWidth = '21rem';
-        sidebar.style.maxWidth = '21rem';
+<style>
+    /* Emergency restore button - always visible */
+    .emergency-restore-btn {
+        position: fixed !important;
+        top: 20px !important;
+        left: 20px !important;
+        z-index: 999999 !important;
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 12px 20px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3) !important;
+        transition: all 0.3s ease !important;
+        font-family: 'Inter', sans-serif !important;
+        display: none !important;
     }
     
-    // Hide the collapse button if it exists
-    const collapseButton = parent.document.querySelector('[data-testid="collapsedControl"]');
-    if (collapseButton) {
-        collapseButton.style.display = 'none';
+    .emergency-restore-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+        background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
     }
+    
+    .emergency-restore-btn.show {
+        display: block !important;
+        animation: pulse 2s infinite !important;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3); }
+        50% { box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5); }
+        100% { box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3); }
+    }
+    
+    /* Enhanced expand button when sidebar is collapsed */
+    [data-testid="collapsedControl"] {
+        background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 0 12px 12px 0 !important;
+        padding: 12px 8px !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        transition: all 0.3s ease !important;
+        font-size: 16px !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        transform: translateX(4px) !important;
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+    }
+    
+    /* Sidebar visibility controls */
+    .sidebar-controls {
+        position: fixed !important;
+        top: 80px !important;
+        left: 20px !important;
+        z-index: 999998 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .sidebar-control-btn {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2) !important;
+    }
+    
+    .sidebar-control-btn:hover {
+        background: linear-gradient(135deg, #059669, #047857) !important;
+        transform: translateY(-1px) !important;
+    }
+</style>
+
+<script>
+// Enhanced sidebar management system
+(function() {
+    let sidebarCheckInterval;
+    let emergencyButton;
+    
+    function createEmergencyButton() {
+        if (emergencyButton) return;
+        
+        emergencyButton = document.createElement('button');
+        emergencyButton.className = 'emergency-restore-btn';
+        emergencyButton.innerHTML = '📤 Show Upload Panel';
+        emergencyButton.onclick = function() {
+            restoreSidebar();
+            hideEmergencyButton();
+        };
+        document.body.appendChild(emergencyButton);
+    }
+    
+    function showEmergencyButton() {
+        if (emergencyButton) {
+            emergencyButton.classList.add('show');
+        }
+    }
+    
+    function hideEmergencyButton() {
+        if (emergencyButton) {
+            emergencyButton.classList.remove('show');
+        }
+    }
+    
+    function createSidebarControls() {
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'sidebar-controls';
+        controlsDiv.innerHTML = `
+            <button class="sidebar-control-btn" onclick="restoreSidebar()">📤 Restore</button>
+            <button class="sidebar-control-btn" onclick="toggleSidebar()">↔️ Toggle</button>
+        `;
+        document.body.appendChild(controlsDiv);
+    }
+    
+    function restoreSidebar() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        const collapsedControl = document.querySelector('[data-testid="collapsedControl"]');
+        
+        if (sidebar) {
+            sidebar.style.transform = 'translateX(0px)';
+            sidebar.style.visibility = 'visible';
+            sidebar.style.display = 'block';
+            sidebar.style.minWidth = '244px';
+            sidebar.style.maxWidth = '550px';
+        }
+        
+        if (collapsedControl) {
+            collapsedControl.click();
+        }
+        
+        // Force Streamlit to recognize sidebar state change
+        setTimeout(() => {
+            const event = new CustomEvent('streamlit:sidebarStateChange', { 
+                detail: { expanded: true } 
+            });
+            window.dispatchEvent(event);
+        }, 100);
+    }
+    
+    function toggleSidebar() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        const collapsedControl = document.querySelector('[data-testid="collapsedControl"]');
+        
+        if (sidebar) {
+            const isHidden = sidebar.style.transform === 'translateX(-100%)' || 
+                           sidebar.style.display === 'none' ||
+                           !sidebar.offsetParent;
+            
+            if (isHidden) {
+                restoreSidebar();
+            } else {
+                // Collapse sidebar
+                const collapseBtn = sidebar.querySelector('[data-testid="baseButton-header"]');
+                if (collapseBtn) {
+                    collapseBtn.click();
+                }
+            }
+        }
+    }
+    
+    function checkSidebarVisibility() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        const isHidden = !sidebar || 
+                        sidebar.style.transform === 'translateX(-100%)' || 
+                        sidebar.style.display === 'none' ||
+                        !sidebar.offsetParent ||
+                        sidebar.offsetWidth < 50;
+        
+        if (isHidden) {
+            showEmergencyButton();
+        } else {
+            hideEmergencyButton();
+        }
+    }
+    
+    // Make functions globally available
+    window.restoreSidebar = restoreSidebar;
+    window.toggleSidebar = toggleSidebar;
+    
+    // Initialize
+    function init() {
+        createEmergencyButton();
+        createSidebarControls();
+        
+        // Start monitoring sidebar visibility
+        sidebarCheckInterval = setInterval(checkSidebarVisibility, 500);
+        
+        // Initial check
+        setTimeout(checkSidebarVisibility, 1000);
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Also initialize when Streamlit loads
+    setTimeout(init, 2000);
+})();
 </script>
 """, unsafe_allow_html=True)
 
@@ -57,26 +257,70 @@ st.markdown("""
         max-width: 1200px !important;
     }
     
-    /* Sidebar styling - Force visible */
+    /* Sidebar styling - Enhanced with better controls */
     .css-1d391kg, .css-1lcbmhc, .css-17lntkn, section[data-testid="stSidebar"] {
         background-color: #f8fafc !important;
         border-right: 1px solid #e2e8f0 !important;
-        transform: translateX(0px) !important;
-        min-width: 21rem !important;
-        max-width: 21rem !important;
         visibility: visible !important;
         display: block !important;
+        transition: all 0.3s ease !important;
     }
     
-    /* Hide collapse button */
-    [data-testid="collapsedControl"] {
-        display: none !important;
+    /* Allow resizable sidebar */
+    section[data-testid="stSidebar"] > div {
+        min-width: 244px !important;
+        max-width: 550px !important;
+        resize: horizontal !important;
+        overflow: auto !important;
     }
     
-    /* Force sidebar content to be visible */
+    /* Enhanced collapse button styling */
+    section[data-testid="stSidebar"] [data-testid="baseButton-header"] {
+        background: linear-gradient(135deg, #64748b, #475569) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2) !important;
+    }
+    
+    section[data-testid="stSidebar"] [data-testid="baseButton-header"]:hover {
+        background: linear-gradient(135deg, #475569, #334155) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3) !important;
+    }
+    
+    /* Sidebar content styling */
     .css-1lcbmhc .css-1v0mbdj {
         display: block !important;
         visibility: visible !important;
+        padding: 1rem !important;
+    }
+    
+    /* Add restore hint when sidebar might be hidden */
+    .sidebar-hint {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+        color: white !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        z-index: 999997 !important;
+        opacity: 0 !important;
+        transform: translateY(20px) !important;
+        transition: all 0.3s ease !important;
+        pointer-events: none !important;
+    }
+    
+    .sidebar-hint.show {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
     }
     
     /* Base typography */
