@@ -893,58 +893,70 @@ def show_landing_page():
         <div class="hero-icon">⚙️</div>
         <h1 class="hero-title">Omega AI Data Analyst</h1>
         <p class="hero-subtitle">Turn your spreadsheets into insights through conversation. No SQL, no coding, just natural language questions about your data.</p>
-        <button class="cta-button" onclick="">Start Analyzing Data →</button>
+        <button class="cta-button">Start Analyzing Data →</button>
     </div>
     """, unsafe_allow_html=True)
     
-    # Features Grid
-    st.markdown("""
-    <div class="features-grid">
+    # Features Grid - Using containers instead of raw HTML to prevent code display
+    st.markdown('<div class="features-grid">', unsafe_allow_html=True)
+    
+    # Create 4 columns for features
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
         <div class="feature-card">
             <div class="feature-icon upload">📤</div>
             <h3 class="feature-title">Easy Upload</h3>
             <p class="feature-description">Drag & drop CSV/Excel files. Automatic data preview and column detection with smart validation.</p>
         </div>
-        
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
         <div class="feature-card">
             <div class="feature-icon chat">💬</div>
             <h3 class="feature-title">Natural Language</h3>
             <p class="feature-description">Ask questions like "show me sales trends" or "compare revenue by region" in plain English.</p>
         </div>
-        
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
         <div class="feature-card">
             <div class="feature-icon chart">📊</div>
             <h3 class="feature-title">Auto Visualization</h3>
             <p class="feature-description">AI generates appropriate charts and graphs with professional styling and smart labeling.</p>
         </div>
-        
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
         <div class="feature-card">
             <div class="feature-icon ai">🧠</div>
             <h3 class="feature-title">AI Insights</h3>
             <p class="feature-description">Real-time analysis with pattern identification and business recommendations.</p>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
     
     # Why Choose Section
     st.markdown("""
     <div class="why-choose-section">
         <h2 class="why-choose-title">Why Choose Omega AI?</h2>
         <p class="why-choose-subtitle">Transform anyone into a data analyst through conversation</p>
-        
         <div class="stats-grid">
             <div class="stat-item">
-                <span class="stat-value">< 30s</span>
+                <span class="stat-value">&lt; 30s</span>
                 <div class="stat-label">Time to First Insight</div>
                 <div class="stat-description">From upload to visualization</div>
             </div>
-            
             <div class="stat-item">
                 <span class="stat-value">0</span>
                 <div class="stat-label">Coding Required</div>
                 <div class="stat-description">Pure natural language interface</div>
             </div>
-            
             <div class="stat-item">
                 <span class="stat-value">∞</span>
                 <div class="stat-label">Question Types</div>
@@ -1015,6 +1027,15 @@ def main():
     
     # Main content area
     if data is not None:
+        # Show Omega header when data is loaded
+        st.markdown("""
+        <div class="hero-section" style="padding: 2rem; margin-bottom: 1rem;">
+            <div class="hero-icon" style="font-size: 2.5rem; margin-bottom: 1rem;">⚙️</div>
+            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 0.5rem;">Omega</h1>
+            <p class="hero-subtitle" style="font-size: 1rem; margin-bottom: 0;">Multi-Agentic System for Intelligent Data Analysis</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         st.markdown('<div class="chat-container">', unsafe_allow_html=True)
         st.markdown("### 💬 Chat with Your Data")
         
