@@ -17,25 +17,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Force sidebar to be visible
-st.markdown("""
-<script>
-    // Force sidebar to be visible
-    const sidebar = parent.document.querySelector('[data-testid="stSidebar"]');
-    if (sidebar) {
-        sidebar.style.transform = 'translateX(0px)';
-        sidebar.style.minWidth = '21rem';
-        sidebar.style.maxWidth = '21rem';
-    }
-    
-    // Hide the collapse button if it exists
-    const collapseButton = parent.document.querySelector('[data-testid="collapsedControl"]');
-    if (collapseButton) {
-        collapseButton.style.display = 'none';
-    }
-</script>
-""", unsafe_allow_html=True)
-
 # Modern styling to match the landing page design
 st.markdown("""
 <style>
@@ -57,26 +38,43 @@ st.markdown("""
         max-width: 1200px !important;
     }
     
-    /* Sidebar styling - Force visible */
+    /* Sidebar styling - Keep flexible but ensure visibility */
     .css-1d391kg, .css-1lcbmhc, .css-17lntkn, section[data-testid="stSidebar"] {
         background-color: #f8fafc !important;
         border-right: 1px solid #e2e8f0 !important;
-        transform: translateX(0px) !important;
-        min-width: 21rem !important;
-        max-width: 21rem !important;
         visibility: visible !important;
         display: block !important;
     }
     
-    /* Hide collapse button */
-    [data-testid="collapsedControl"] {
-        display: none !important;
+    /* Allow resizable sidebar */
+    section[data-testid="stSidebar"] > div {
+        min-width: 244px !important;
+        max-width: 550px !important;
+        resize: horizontal !important;
+        overflow: auto !important;
     }
     
-    /* Force sidebar content to be visible */
+    /* Keep collapse/expand functionality */
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0 8px 8px 0 !important;
+        padding: 8px !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover {
+        background-color: #e2e8f0 !important;
+        transform: translateX(2px) !important;
+    }
+    
+    /* Sidebar content styling */
     .css-1lcbmhc .css-1v0mbdj {
         display: block !important;
         visibility: visible !important;
+        padding: 1rem !important;
     }
     
     /* Base typography */
