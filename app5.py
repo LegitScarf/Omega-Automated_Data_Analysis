@@ -17,84 +17,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Add emergency sidebar restore button and enhanced sidebar controls
-st.markdown("""
-<style>
-    /* Emergency restore button - always visible */
-    .emergency-restore-btn {
-        position: fixed !important;
-        top: 20px !important;
-        left: 20px !important;
-        z-index: 999999 !important;
-        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 50px !important;
-        padding: 12px 20px !important;
-        font-weight: 600 !important;
-        font-size: 14px !important;
-        cursor: pointer !important;
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3) !important;
-        transition: all 0.3s ease !important;
-        font-family: 'Inter', sans-serif !important;
-        display: none !important;
-    }
-    
-    .emergency-restore-btn:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
-        background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-    }
-    
-    .emergency-restore-btn.show {
-        display: block !important;
-        animation: pulse 2s infinite !important;
-    }
-    
-    @keyframes pulse {
-        0% { box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3); }
-        50% { box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5); }
-        100% { box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3); }
-    }
-    
-    /* Enhanced expand button when sidebar is collapsed */import os
-import streamlit as st
-from openai import OpenAI
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
-import base64
-from PIL import Image
-import io
-import tempfile
-
-# Configure Streamlit page with modern theme
-st.set_page_config(
-    page_title="Omega - AI Data Analyst",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Force sidebar to be visible
-st.markdown("""
-<script>
-    // Force sidebar to be visible
-    const sidebar = parent.document.querySelector('[data-testid="stSidebar"]');
-    if (sidebar) {
-        sidebar.style.transform = 'translateX(0px)';
-        sidebar.style.minWidth = '21rem';
-        sidebar.style.maxWidth = '21rem';
-    }
-    
-    // Hide the collapse button if it exists
-    const collapseButton = parent.document.querySelector('[data-testid="collapsedControl"]');
-    if (collapseButton) {
-        collapseButton.style.display = 'none';
-    }
-</script>
-""", unsafe_allow_html=True)
-
 # Modern styling to match the landing page design
 st.markdown("""
 <style>
@@ -116,26 +38,43 @@ st.markdown("""
         max-width: 1200px !important;
     }
     
-    /* Sidebar styling - Force visible */
+    /* Sidebar styling - Keep flexible but ensure visibility */
     .css-1d391kg, .css-1lcbmhc, .css-17lntkn, section[data-testid="stSidebar"] {
         background-color: #f8fafc !important;
         border-right: 1px solid #e2e8f0 !important;
-        transform: translateX(0px) !important;
-        min-width: 21rem !important;
-        max-width: 21rem !important;
         visibility: visible !important;
         display: block !important;
     }
     
-    /* Hide collapse button */
-    [data-testid="collapsedControl"] {
-        display: none !important;
+    /* Allow resizable sidebar */
+    section[data-testid="stSidebar"] > div {
+        min-width: 244px !important;
+        max-width: 550px !important;
+        resize: horizontal !important;
+        overflow: auto !important;
     }
     
-    /* Force sidebar content to be visible */
+    /* Keep collapse/expand functionality */
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0 8px 8px 0 !important;
+        padding: 8px !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover {
+        background-color: #e2e8f0 !important;
+        transform: translateX(2px) !important;
+    }
+    
+    /* Sidebar content styling */
     .css-1lcbmhc .css-1v0mbdj {
         display: block !important;
         visibility: visible !important;
+        padding: 1rem !important;
     }
     
     /* Base typography */
