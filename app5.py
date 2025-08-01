@@ -17,6 +17,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Force sidebar to be visible
+st.markdown("""
+<script>
+    // Force sidebar to be visible
+    const sidebar = parent.document.querySelector('[data-testid="stSidebar"]');
+    if (sidebar) {
+        sidebar.style.transform = 'translateX(0px)';
+        sidebar.style.minWidth = '21rem';
+        sidebar.style.maxWidth = '21rem';
+    }
+    
+    // Hide the collapse button if it exists
+    const collapseButton = parent.document.querySelector('[data-testid="collapsedControl"]');
+    if (collapseButton) {
+        collapseButton.style.display = 'none';
+    }
+</script>
+""", unsafe_allow_html=True)
+
 # Modern styling to match the landing page design
 st.markdown("""
 <style>
@@ -38,10 +57,26 @@ st.markdown("""
         max-width: 1200px !important;
     }
     
-    /* Sidebar styling */
+    /* Sidebar styling - Force visible */
     .css-1d391kg, .css-1lcbmhc, .css-17lntkn, section[data-testid="stSidebar"] {
         background-color: #f8fafc !important;
         border-right: 1px solid #e2e8f0 !important;
+        transform: translateX(0px) !important;
+        min-width: 21rem !important;
+        max-width: 21rem !important;
+        visibility: visible !important;
+        display: block !important;
+    }
+    
+    /* Hide collapse button */
+    [data-testid="collapsedControl"] {
+        display: none !important;
+    }
+    
+    /* Force sidebar content to be visible */
+    .css-1lcbmhc .css-1v0mbdj {
+        display: block !important;
+        visibility: visible !important;
     }
     
     /* Base typography */
