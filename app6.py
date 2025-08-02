@@ -12,7 +12,7 @@ import tempfile
 
 # Configure Streamlit page with modern theme
 st.set_page_config(
-    page_title="Omega - AI Data Analyst",
+    page_title="Omega - Your AI Data Analyst",
     layout="wide",
     initial_sidebar_state="expanded"
 )
