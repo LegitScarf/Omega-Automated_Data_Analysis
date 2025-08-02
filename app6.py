@@ -1171,7 +1171,7 @@ def show_landing_page():
     st.markdown("""
     <div class="hero-section">
         <div class="hero-icon">⚙️</div>
-        <h1 class="hero-title">Omega AI Data Analyst</h1>
+        <h1 class="hero-title">Omega - Your AI Data Analyst</h1>
         <p class="hero-subtitle">Turn your spreadsheets into insights through conversation. No SQL, no coding, just natural language questions about your data.</p>
         <button class="cta-button">Start Analyzing Data →</button>
     </div>
