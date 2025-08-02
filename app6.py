@@ -17,6 +17,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+st.title("Omega")
+st.subheader("Your AI Data Analyst")
+
 # Add emergency sidebar restore button and enhanced sidebar controls
 st.markdown("""
 <style>
