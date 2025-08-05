@@ -1782,7 +1782,7 @@ def process_query_with_context(data, query, client):
                 return "error", "❌ The attributes you're looking for are not present in the dataset. Please check the available columns and try again.", None, None
             
             # Step 2: Generate visualization
-            with st.spinner("📊 Creating your visualization..."):
+            with st.spinner("Creating your visualization..."):
                 code = coder_agent(data, query, client)
                 
                 if not code:
