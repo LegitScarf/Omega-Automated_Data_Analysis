@@ -27,7 +27,7 @@ Thank you for your interest in contributing to Omega! This document provides gui
 
 #### Development Setup
 ```bash
-git clone https://github.com/yourusername/omega-ai-analyst.git
+git clone https://github.com/LegitScarf/omega-ai-analyst.git
 cd omega-ai-analyst
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -233,8 +233,6 @@ Contributors will be:
 
 ## 📞 Getting Help
 
-- 💬 Discord: [Join our community](https://discord.gg/omega-analyst)
-- 📧 Email: developers@omega-analyst.com
-- 📋 Discussions: [GitHub Discussions](../../discussions)
+- 📧 Email: arpanmallik173@gmail.com
 
 Thank you for contributing to Omega! 🚀
