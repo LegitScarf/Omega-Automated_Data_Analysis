@@ -56,13 +56,13 @@ graph TD
 
 ### Option 1: Clone Repository
 ```bash
-git clone https://github.com/yourusername/omega-ai-analyst.git
-cd omega-ai-analyst
+git clone https://github.com/LegitScarf/omega-ai-analyst.git
+cd Omega-Automated_Data_Analysis
 pip install -r requirements.txt
 ```
 
 ### Option 2: Direct Download
-1. Download `omega_analyst.py` 
+1. Download `app8.py` 
 2. Install dependencies:
 ```bash
 pip install streamlit openai pandas numpy matplotlib pillow openpyxl
@@ -88,7 +88,7 @@ The app will prompt for your API key if not found in the above methods.
 
 ### Starting the Application
 ```bash
-streamlit run omega_analyst.py
+streamlit run app8.py
 ```
 
 ### Basic Workflow
