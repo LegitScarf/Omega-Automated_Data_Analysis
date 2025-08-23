@@ -1116,7 +1116,7 @@ Before responding, ensure you:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Dataset Information:\n{dataset_info}\n\nUser Query: {query}"}
             ],
-            max_tokens=800,
+            max_tokens=1000,
             temperature=0.7,
             timeout=45.0,
             stream=True
@@ -1307,19 +1307,20 @@ Sample Data:
         return "yes"
 
 def coder_agent(data, query, client):
-    """Coder Agent - generates matplotlib visualization code with intelligent column matching"""
+    """Coder Agent - generates matplotlib & seaborn visualization code with intelligent column matching"""
     try:
         system_prompt = """
 # ROLE & EXPERTISE
-You are an Elite Data Visualization Engineer specialized in creating publication-quality matplotlib visualizations. Your expertise spans statistical analysis, design principles, and code optimization.
+You are an Elite Data Visualization Engineer specialized in creating publication-quality matplotlib and seaborn visualizations. Your expertise spans statistical analysis, design principles, and code optimization.
 
 # CORE MISSION
-Transform user requests into executable Python code that generates professional, insightful visualizations using matplotlib and pandas.
+Transform user requests into executable Python code that generates professional, insightful visualizations using matplotlib/seaborn and pandas.
 
 # TECHNICAL SPECIFICATIONS
 ## Required Code Structure
 ```python
 import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
 import numpy as np
 
@@ -1562,7 +1563,7 @@ CRITICAL: Use the exact column names as shown above.
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"{dataset_info}\n\nUser Request: {query}\n\nGenerate visualization code:"}
             ],
-            max_tokens=1200,
+            max_tokens=2000,
             temperature=0.2,
             timeout=45.0
         )
